@@ -1,0 +1,7 @@
+requests
+bs4
+IPython
+pandas
+selenium
+lxml
+webdriver-manager
