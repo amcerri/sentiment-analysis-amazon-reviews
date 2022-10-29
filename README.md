@@ -11,3 +11,5 @@ For the dataset, we chose to perform web scraping instead of using readily avail
 ## Web Scraping
 
 The web scraping was performed using the [Selenium](https://www.selenium.dev/) library, in conjunction with the [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) library. The scraping was performed on the [Amazon](https://www.amazon.com/) website, and the data was collected from the reviews of the products.
+
+Although Selenium performs slower than Requests, it is more versatile, and allows us to perform actions on the website, such as clicking on buttons. At the moment that is not being used, but it is a possibility for future improvements.

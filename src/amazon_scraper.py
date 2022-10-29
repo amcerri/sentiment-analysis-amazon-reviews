@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
@@ -23,34 +24,43 @@ class AmazonScraper:
     # Constructor (initializes the driver)
     def __init__(self):
         self.options = Options()
+        self.options.add_argument('--disable-blink-features=AutomationControlled')
         self.options.add_argument('--headless')
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
 
     # Scrape the reviews from the given URL for a given number of pages (default is to scrape all pages)
-    def scrape_reviews(self, url, max_pages):
-        # Add a timeout to the driver to prevent it from hanging indefinitely
-        t = time.time()
-        self.driver.set_page_load_timeout(10)
+    def scrape_reviews(self, url, max_pages, product_list):
+        print('Initializing the Web Driver. Scraping will start in a moment...')
+        # Initiate WebDriverWait
+        wait = WebDriverWait(self.driver, 30)
 
-        # Open the URL
+        # Open the URL for the product
+        self.driver.get(url)
+        time.sleep(5)
+        
+        # Wait for the page to load
         try:
-            self.driver.get(url)
+            wait.until(lambda driver: driver.find_element(By.XPATH, '//*[@id="reviews-medley-footer"]/div[2]/a'))
         except TimeoutException:
-            self.driver.execute_script("window.stop();")
+            print('Page timed out for url: ' + url)
+            return
 
         # Get the page source and create a BeautifulSoup object for the product page
         html = self.driver.page_source.encode('utf-8')
         soup = BeautifulSoup(html, 'lxml')
+        time.sleep(1)
 
         # Get the product name
         product_name = soup.find('span', {'id': 'productTitle'}).text.strip()
 
         # Navigate to the reviews page
         reviews_page = soup.find('a', {'data-hook': 'see-all-reviews-link-foot'})
+        self.driver.get('https://www.amazon.com' + reviews_page['href'])
         try:
-            self.driver.get('https://www.amazon.com' + reviews_page['href'])
+            wait.until(lambda driver: driver.find_element(By.XPATH, '//*[@id="cm_cr-review_list"]'))
         except TimeoutException:
-            self.driver.execute_script("window.stop();")
+            print('Page timed out for url: ' + 'https://www.amazon.com' + reviews_page['href'])
+            return
         
 
         # Get the page source and create a BeautifulSoup object for the first reviews page
@@ -66,15 +76,14 @@ class AmazonScraper:
 
         while page <= max_pages:
             clear_output(wait=True)
-            print('Scraping page ' + str(page) + 'of ' + url)
-
+            print('Scraping page ' + str(page) + ' for product: ' + product_name)
 
             # Get a list of all the reviews on the page
             product_reviews = reviews_section.find_all('div', {'data-hook': 'review'})
 
             # Check if data-hook 'dp-global-reviews-header' is present (no more reviews from the US)
             if self.driver.find_elements(By.CSS_SELECTOR, '[data-hook="dp-global-reviews-header"]'):
-                print('No more reviews from the US, stopped at page ' + str(page))
+                print('No more reviews from the US for product: ' + product_name)
                 break
             
 
@@ -111,17 +120,19 @@ class AmazonScraper:
                 
             # Check if 'a-disabled a-last' is present (no more pages) using selenium
             if self.driver.find_elements(By.CSS_SELECTOR, '[class="a-disabled a-last"]'):
-                print('No more pages, stopped at page ' + str(page))
+                print('No review pages left for product: ' + product_name)
                 break
             
             # Get the html for the next page
             next_page = soup.find('li', {'class': 'a-last'})
 
             # Navigate to the next page
+            self.driver.get('https://www.amazon.com' + next_page.find('a')['href'])
             try:
-                self.driver.get('https://www.amazon.com' + next_page.find('a')['href'])
+                wait.until(lambda driver: driver.find_element(By.XPATH, '//*[@id="cm_cr-review_list"]'))
             except TimeoutException:
-                self.driver.execute_script("window.stop();")
+                print('Page timed out for url: ' + 'https://www.amazon.com' + next_page.find('a')['href'])
+                return
             
 
             # Get the page source and create a BeautifulSoup object for the next page
