@@ -1,12 +1,12 @@
 # Amazon Product Reviews Sentiment Analysis
 
-This is the project for the Natural Language Processing course at the Federal University of Pelotas.
+This is the final assignment project for the Natural Language Processing course at the Federal University of Pelotas.
 
-For the final project, all students were assigned to choose a topic related to the discipline for the development of a project, and for that, we selected sentiment analysis.
+All students were assigned to choose a topic related to the discipline for the development of a project, and for that, I selected sentiment analysis.
 
 ## Dataset
 
-For the dataset, we chose to perform web scraping instead of using readily available datasets. This allows us to target specific products or categories we wish to analyze, and narrow down the analysis on purpose, which becomes useful when we are considering analyzing a specific product or brand.
+For the dataset, I chose to perform web scraping instead of using readily available datasets. This allows to target specific products or categories that we wish to analyze, and narrow down the analysis on purpose, which becomes useful when considering analyzing a specific product or brand.
 
 ## Web Scraping
 
