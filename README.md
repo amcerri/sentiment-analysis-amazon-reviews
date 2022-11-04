@@ -1,6 +1,6 @@
 # Amazon Product Reviews Sentiment Analysis
 
-This is the project for the Natural Language Processing course at the Federal University of Pelotas, developed by me ([amcerri](https://github.com/amcerri)), Afonso and Emerson.
+This is the project for the Natural Language Processing course at the Federal University of Pelotas.
 
 For the final project, all students were assigned to choose a topic related to the discipline for the development of a project, and for that, we selected sentiment analysis.
 
