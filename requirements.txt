@@ -2,3 +2,10 @@ ipywidgets
 contractions
 textblob
 wordcloud
+pandas
+matplotlib
+numpy
+seaborn
+spacy
+langdetect
+tdqm
